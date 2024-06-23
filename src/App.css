@@ -1,0 +1,272 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9eded;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
+}
+
+.navbar-logo {
+  height: 3rem; /* Adjust based on your needs */
+  margin-right: 1.25rem;
+  margin-left: 2%;
+}
+
+.navbar-heading {
+  color: #090909;
+  font-size: 1.5rem; /* Adjust based on your needs */
+  margin-left: 25%;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap; 
+  margin: 0 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 0.5rem;
+  row-gap: 10px;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Adjust the gap between items as needed */
+}
+
+.filter-item {
+  /*flex: 1 1 calc(33.333% - 10px); /* Make each item flexible */
+  min-width: 200px; /* Adjust as needed */
+}
+
+.filter-item.circle {
+  flex: 1 1 calc(25% - 10px); /* Adjust as needed */
+}
+
+.filter-item.division {
+  flex: 1 1 calc(25% - 10px); /* Adjust as needed */
+}
+
+.filter-item.username {
+  flex: 2 1 calc(50% - 10px); /* Adjust as needed */
+}
+
+.filter-item.date {
+  flex: 1 1 calc(25% - 10px); /* Adjust as needed */
+}
+
+.filter-item label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+#date-input  {
+  min-width: 200px;
+  width: 25%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  height: 38px; /* Match the height of the Select component */
+  box-sizing: border-box;
+}
+
+#date-input:focus{
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.react-select__control {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #ffffff;
+  min-width: 150px;
+  width: 100%;
+  font-size: 16px;
+  padding: 10px;
+  box-shadow: none;
+}
+
+.react-select__control--is-focused {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.react-select__menu {
+  z-index: 9999;
+}
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-button button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button button:hover {
+  background-color: #0056b3;
+}
+
+.submit-button button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /*width: 100%;
+  max-width: 1200px;*/
+  color: red;
+  margin: 0 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.details-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /*width: 100%;
+  max-width: 1200px;*/
+  margin: 0 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.details,
+.graph {
+  width: 100%;
+  margin: 5px 0;
+}
+
+.details {
+  text-align: left;
+  padding: 20px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+
+.graph-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 0.5rem;
+  row-gap: 10px;
+}
+
+.graph-div{
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden; 
+}
+.graph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  min-width: 600px; /* Minimum width to maintain readability */
+  width: 100%;
+}
+
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    justify-content: center;
+  }
+
+  .navbar-logo {
+    margin:0;
+  }
+  
+  .navbar-heading { /* Adjust based on your needs */
+    margin-left: 0;
+  }
+
+}
+
+
+@media (max-width: 1024px) {
+  .filter-options {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-options {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .filter-item {
+    flex: 1 1 calc(50% - 10px); /* 2 items per row on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-item {
+    flex: 1 1 100%; /* 1 item per row on small screens */
+  }
+}
