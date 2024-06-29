@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useRef, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend, TimeScale, PointElement } from 'chart.js';
 import 'chartjs-adapter-luxon';
-import { DateTime } from 'luxon';
 import Modal from 'react-modal';
+import { DateTime } from 'luxon';
 
 // Register the necessary components
 ChartJS.register(CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend, TimeScale, PointElement);
@@ -21,34 +21,69 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
+const CustomLegend = ({ shapes }) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+      {shapes.map((shape, index) => (
+        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+          <div
+            style={{
+              width: '10px',
+              height: '10px',
+              backgroundColor: shape.color,
+              marginRight: '5px',
+              borderRadius: shape.shape === 'circle' ? '50%' : '0',
+              transform: shape.shape === 'cross' ? 'rotate(45deg)' : 'none',
+              border: shape.shape === 'cross' ? '2px solid red' : 'none',
+            }}
+          ></div>
+          <span>{shape.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 function ActivityGraph({ graphData }) {
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ location: '', time: '' });
+  const chartRef = useRef(null);
+  // Step 1: Normalize locations, treating null or empty values as "Unknown"
+  const normalizedData = graphData.map(entry => ({
+    ...entry,
+    Location: entry.Location || "Unknown",
+  }));
 
-  const openModal = (location, time) => {
-    setModalContent({ location, time });
-    setIsOpen(true);
-  };
+  // Step 2: Map unique locations to numerical indices
+  const uniqueLocations = [...new Set(normalizedData.map(entry => entry.Location))];
+  const locationMap = {};
+  uniqueLocations.forEach((location, index) => {
+    locationMap[location] = index;
+  });
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
-  const data = {
-    labels: graphData.labels, // Assuming labels contain ISO 8601 timestamps
-    datasets: [
-      {
-        label: 'User Activity',
-        data: graphData.data.map((point) => point.value),
-        backgroundColor: graphData.data.map((point) => point.backgroundColor),
-        borderColor: 'rgba(75, 192, 192, 1)',
-        fill: false,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        pointStyle: graphData.data.map((point) => point.pointStyle),
-      },
-    ],
-  };
+  // Step 3: Transform data with different colors and shapes based on multipleConn and cancelStatus
+  const labels = normalizedData.map(entry => entry.Time);
+  const datasets = [{
+    label: 'User Activity',
+    data: normalizedData.map(entry => ({
+      x: DateTime.fromISO(entry.Time).toMillis(),
+      y: locationMap[entry.Location],
+      orderNo: entry.orderno,
+    })),
+    backgroundColor: normalizedData.map(entry => {
+      if (entry.CancelStatus === "Cancelled") return 'rgba(255, 0, 0, 0.6)';
+      return entry.multipleConn === 'Y' ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)';
+    }),
+    borderColor: normalizedData.map(entry => {
+      if (entry.CancelStatus === "Cancelled") return 'rgba(255, 0, 0, 1)';
+      return entry.multipleConn === 'Y' ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)';
+    }),
+    fill: false,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    pointStyle: normalizedData.map(entry => {
+      if (entry.CancelStatus === 'Cancelled') return 'crossRot';
+      return entry.multipleConn === 'Y' ? 'circle' : 'rect';
+    }),
+  }];
 
   const options = {
     responsive: true,
@@ -56,11 +91,13 @@ function ActivityGraph({ graphData }) {
       x: {
         type: 'time',
         time: {
-          unit: 'hour', // Change this to fit your needs (e.g., 'day', 'minute', etc.)
-          tooltipFormat: 'DD T', // Luxon format string for tooltips
+          unit: 'hour',
+          tooltipFormat: 'DD t',
           displayFormats: {
-            hour: 'LLL dd, t', // Luxon format string for x-axis labels
+            hour: 't',
           },
+          min: '08:00:00z', // Set your desired min time
+          max: '20:00:00z',
         },
         title: {
           display: true,
@@ -68,16 +105,13 @@ function ActivityGraph({ graphData }) {
         },
       },
       y: {
-        type: 'category',
         title: {
           display: true,
           text: 'Location',
         },
         ticks: {
-          callback: function (value, index, values) {
-            // Assuming locations are represented as numbers and you need to map them to location names
-            // Modify this based on your actual location data
-            return graphData.locations ? graphData.locations[value] : value;
+          callback: function (value) {
+            return uniqueLocations[value];
           },
           autoSkip: false,
           maxRotation: 90,
@@ -87,7 +121,31 @@ function ActivityGraph({ graphData }) {
     },
     plugins: {
       legend: {
+        display: true,
         position: 'top',
+        onClick: () => {},
+        labels: {
+          generateLabels: (chart) => {
+            const datasets = chart.data.datasets;
+            const shapes = [
+              { text: 'Multiple Conn (Y)', backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', pointStyle: 'circle' },
+              { text: 'Multiple Conn (N)', backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', pointStyle: 'rect' },
+              { text: 'Cancelled', backgroundColor: 'rgba(255, 0, 0, 0.6)', borderColor: 'rgba(255, 0, 0, 1)', pointStyle: 'crossRot' },
+            ];
+
+            return shapes.map(shape => ({
+              text: shape.text,
+              fillStyle: shape.backgroundColor,
+              strokeStyle: shape.borderColor,
+              pointStyle: shape.pointStyle,
+              hidden: false,
+              lineDash: [],
+              lineWidth: 1,
+              datasetIndex: 0
+            }));
+          },
+          usePointStyle: true // This line is crucial to make sure the point style is used in the legend
+        }
       },
       title: {
         display: true,
@@ -96,10 +154,10 @@ function ActivityGraph({ graphData }) {
       tooltip: {
         callbacks: {
           label: function (context) {
-            // Custom tooltip content
             const index = context.dataIndex;
-            const location = graphData.locations[context.raw];
-            return `Location: ${location}, Time: ${context.label}`;
+            const location = uniqueLocations[context.raw.y];
+            const orderNo = context.raw.orderNo;
+            return `Location: ${location}, OrderNo: ${orderNo}`;
           }
         }
       },
@@ -107,30 +165,60 @@ function ActivityGraph({ graphData }) {
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index;
-        const location = graphData.locations[data.datasets[0].data[index]];
-        const time = data.labels[index];
-        openModal(location, time);
+      const dataPoint = datasets[0].data[index];
+      console.log(dataPoint)
+      const location = uniqueLocations[dataPoint.y];
+      const time = DateTime.fromMillis(dataPoint.x).toFormat('HH:mm');
+      const orderNo = dataPoint.orderNo
+      openModal(orderNo, location, time);
+
       }
     },
   };
 
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ location: '', time: '' });
+
+  const openModal = (orderNo,location, time) => {
+    setModalContent({ orderNo, location, time });
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (chartRef.current) {
+        chartRef.current.resize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div className="graph-div">
-    <div className="graph">
-      <Line data={data} options={options} />
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Activity Details"
-      >
-        <h2>Activity Details</h2>
+      <div className="graph">
+        <Line ref={chartRef} data={{ labels, datasets }} options={options} />
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Activity Details"
+        >
+          <h2>Activity Details</h2>
+          <div>OrderNo: {modalContent.orderNo}</div>
         <div>Location: {modalContent.location}</div>
         <div>Time: {modalContent.time}</div>
-        <button onClick={closeModal}>Close</button>
-      </Modal>
-    </div>
+          <button onClick={closeModal}>Close</button>
+        </Modal>
+      </div>
     </div>
   );
 }

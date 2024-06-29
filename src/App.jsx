@@ -7,14 +7,17 @@ import ActivityGraph from './components/ActivityGraph';
 import axios from 'axios';
 import { Oval } from 'react-loader-spinner';
 import { FaExclamationCircle } from 'react-icons/fa';
+import data from './data';
 
 function App() {
-  const [filters, setFilters] = useState({
+  const initialFilters = {
     circle: '',
     division: '',
     username: '',
     date: ''
-  });
+  };
+
+  const [filters, setFilters] = useState(initialFilters);
 
   const [details, setDetails] = useState(null);
   const [graphData, setGraphData] = useState(null);
@@ -27,62 +30,61 @@ function App() {
     setFilters(updatedFilters);
   };
 
-  const handleSubmit = () => {
-    // Fetch details and graph data based on filters
-    // Dummy implementation for now
-    setDetails({
-      info: 'Fetched details based on filters.'
-    });
+  // const handleSubmit = () => {
+  //   // Fetch details and graph data based on filters
+  //   // Dummy implementation for now
+  //   setDetails({
+  //     info: 'Fetched details based on filters.'
+  //   });
 
-    setGraphData({
-      labels: ['2023-06-21T08:00:00', '2023-06-21T09:00:00', '2023-06-21T10:00:00'], // ISO 8601 timestamps
-  data: [
-    { value: 0, backgroundColor: 'rgba(75, 192, 192, 0.6)', pointStyle: 'circle' },
-    { value: 1, backgroundColor: 'rgba(255, 99, 132, 0.6)', pointStyle: 'rect' },
-    { value: 2, backgroundColor: 'rgba(54, 162, 235, 0.6)', pointStyle: 'cross' }
-  ],
-  locations: ['Location A', 'Location B', 'Location C'] // Location names
-    });
+  //   setGraphData();
 
-    setApiResponse(true)
+  //   setApiResponse(true)
+  // };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+    setApiResponse(null);
+    try {
+      // const response = await axios.post('/api/your-endpoint', filters);
+      // if (response.status === 200) {
+      //   setApiResponse(response.data);
+      // } else {
+      //   setErrorMessage(`Errorrrrrrrrrr: ${response.status}`);
+      // }
+      setApiResponse(data);
+    } catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        setErrorMessage(`Error page: ${error.response.status}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        setErrorMessage('Error: No response from server');
+      } else {
+        // Something happened in setting up the request
+        setErrorMessage(`Error: ${error.message}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // const handleSubmit = async () => {
-  //   setIsLoading(true);
-  //   setErrorMessage('');
-  //   setApiResponse(null);
-  //   try {
-  //     const response = await axios.post('/api/your-endpoint', filters);
-  //     if (response.status === 200) {
-  //       setApiResponse(response.data);
-  //     } else {
-  //       //throw new Error();
-  //       setErrorMessage(`Errorrrrrrrrrr: ${response.status}`);
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       // Server responded with a status other than 200 range
-  //       setErrorMessage(`Error page: ${error.response.status}`);
-  //     } else if (error.request) {
-  //       // Request was made but no response received
-  //       setErrorMessage('Error: No response from server');
-  //     } else {
-  //       // Something happened in setting up the request
-  //       setErrorMessage(`Error: ${error.message}`);
-  //     }
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleReset = () => {
+    setFilters(initialFilters);
+  };
 
   return (
     <>
       <Header />
       <div className="filters">
         <Filters filters={filters} onFiltersChange={handleFiltersChange} />
-        <div className="submit-button">
+        <div className="button-group">
           <button onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? 'Loading...' : 'Submit'}
+          </button>
+          <button onClick={handleReset} disabled={isLoading}>
+            Reset
           </button>
         </div>
       </div>
@@ -114,10 +116,10 @@ function App() {
       {apiResponse && (
         <>
           <div className="details-container">
-            <Details details={details} />
+            <Details completedCases={apiResponse} pendingCases={apiResponse} />
           </div>
           <div className="graph-container">
-            <ActivityGraph graphData={graphData} />
+            <ActivityGraph graphData={apiResponse} />
           </div>
         </>
       )}
