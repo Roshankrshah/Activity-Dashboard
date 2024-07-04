@@ -243,13 +243,24 @@ function ActivityGraph({ graphData }) {
     </div>
     <h2 style={{ marginBottom: '5px' }}>Pending Orders</h2>
     <hr style={{ marginBottom: '20px' }} />
-    <ul>
-    <li style={{textAlign:'left'}}>
-           <strong>Order No:</strong> 54321;
-           <strong>Address:</strong> 456 Maple St, Othertown;
-           <strong>Pendency Day:</strong> 2;
-    </li>
-    </ul>
+    <div style={{ overflowX: 'auto' }}>
+    <table style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Order No</th>
+        <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Address</th>
+        <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Pendency Day</th>
+      </tr>
+    </thead>
+    <tbody style={{textAlign: 'left'}}>
+        <tr>
+          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>53241</td>
+          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>456 Maple St, Othertownnnnnnnnnnnnnnnnnnnmmmmmmmmmmmmmmmmmmmmm</td>
+          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>2</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
     <button onClick={closeModal} style={{ padding: '10px 20px', backgroundColor: '#e85a62', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', marginTop: '20px' }}>
       Close
     </button>

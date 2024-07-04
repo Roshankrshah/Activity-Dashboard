@@ -8,6 +8,8 @@ import axios from 'axios';
 import { Oval } from 'react-loader-spinner';
 import { FaExclamationCircle } from 'react-icons/fa';
 import data from './data';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/Login';
 
 function App() {
   const initialFilters = {
@@ -24,7 +26,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleFiltersChange = (updatedFilters) => {
     setFilters(updatedFilters);
@@ -75,56 +77,75 @@ function App() {
   };
 
   return (
-    <>
-      <Header />
-      <div className="filters">
-        <Filters filters={filters} onFiltersChange={handleFiltersChange} />
-        <div className="button-group">
-          <button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? 'Loading...' : 'Submit'}
-          </button>
-          <button onClick={handleReset} disabled={isLoading}>
-            Reset
-          </button>
-        </div>
-      </div>
+    <Router>
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={setIsAuthenticated} />
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            isAuthenticated ? (
+              <>
+                <Header />
+                <div className="filters">
+                  <Filters filters={filters} onFiltersChange={handleFiltersChange} />
+                  <div className="button-group">
+                    <button onClick={handleSubmit} disabled={isLoading}>
+                      {isLoading ? 'Loading...' : 'Submit'}
+                    </button>
+                    <button onClick={handleReset} disabled={isLoading}>
+                      Reset
+                    </button>
+                    <button onClick={handleSubmit} disabled={isLoading}>
+                      {isLoading ? 'Loading...' : 'Submit'}
+                    </button>
+                  </div>
+                </div>
 
-      {isLoading && (
-        <div className="loader-container">
-          <Oval
-            height={80}
-            width={80}
-            color="#007bff"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#007bff"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-          />
-        </div>
-      )}
+                {isLoading && (
+                  <div className="loader-container">
+                    <Oval
+                      height={80}
+                      width={80}
+                      color="#007bff"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                      ariaLabel='oval-loading'
+                      secondaryColor="#007bff"
+                      strokeWidth={2}
+                      strokeWidthSecondary={2}
+                    />
+                  </div>
+                )}
 
-      {errorMessage && (
-        <div className="error-container">
-          <FaExclamationCircle size={32} color="red" />
-          <span>{errorMessage}</span>
-        </div>
-      )}
+                {errorMessage && (
+                  <div className="error-container">
+                    <FaExclamationCircle size={32} color="red" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
 
-      {apiResponse && (
-        <>
-          <div className="details-container">
-            <Details completedCases={apiResponse} pendingCases={apiResponse} />
-          </div>
-          <div className="graph-container">
-            <ActivityGraph graphData={apiResponse} />
-          </div>
-        </>
-      )}
-    </>
-    
+                {apiResponse && (
+                  <>
+                    <div className="details-container">
+                      <Details completedCases={apiResponse} pendingCases={apiResponse} />
+                    </div>
+                    <div className="graph-container">
+                      <ActivityGraph graphData={apiResponse} />
+                    </div>
+                  </>
+                )}
+              </>
+            ) : <Navigate to="/" />
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 

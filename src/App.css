@@ -45,28 +45,6 @@ body {
   row-gap: 10px;
 }
 
-.filter-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* Adjust the gap between items as needed */
-}
-
-.filter-item {
-  /*flex: 1 1 calc(33.333% - 10px); /* Make each item flexible */
-  min-width: 200px; /* Adjust as needed */
-}
-
-.filter-item.circle {
-  flex: 1 1 calc(25% - 10px); /* Adjust as needed */
-}
-
-.filter-item.division {
-  flex: 1 1 calc(25% - 10px); /* Adjust as needed */
-}
-
-.filter-item.username {
-  flex: 2 1 calc(50% - 10px); /* Adjust as needed */
-}
 
 .filter-item.date {
   flex: 1 1 calc(25% - 10px); /* Adjust as needed */
@@ -308,6 +286,68 @@ canvas {
   height: 100%;
 }
 
+/*login Css*/
+.login-container {
+  width: 300px;
+  margin: 100px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+}
+
+.login-container .error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.login-container div {
+  margin-bottom: 10px;
+}
+
+.login-container label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-container button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #0056b3;
+}
+
+/* .loader-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+  padding: 20px;
+} */
 
 @media (max-width: 768px) {
   .navbar {
@@ -324,29 +364,4 @@ canvas {
     margin-left: 0;
   }
 
-}
-
-
-@media (max-width: 1024px) {
-  .filter-options {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .filter-options {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-}
-
-@media (max-width: 1200px) {
-  .filter-item {
-    flex: 1 1 calc(50% - 10px); /* 2 items per row on medium screens */
-  }
-}
-
-@media (max-width: 768px) {
-  .filter-item {
-    flex: 1 1 100%; /* 1 item per row on small screens */
-  }
 }
